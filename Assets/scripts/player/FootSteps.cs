@@ -20,7 +20,8 @@ public class FootSteps : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(Input.GetAxis("Horizontal") != 0 && !Audio.isPlaying && transform.parent.GetComponent<PlayerController>().isGrounded)
+        var playerController = transform.parent.GetComponent<PlayerController>();
+        if (Input.GetAxis("Horizontal") != 0 && !Audio.isPlaying && playerController.isGrounded && !playerController.IsDead)
         {
             Audio.pitch = Random.Range(PitchMin, PitchMax);
             Audio.volume = Random.Range(VolMin, VolMax);

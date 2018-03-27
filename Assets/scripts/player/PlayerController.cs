@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
 
     // déclaration de variables
     // si public : accessible depuis l'inspector !
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour {
     public bool isGrounded = false;
     public AudioClip soundJump;
     public AudioClip soundDead;
+    public bool IsDead;
 
     private bool isJumping = false;
 
@@ -18,30 +20,50 @@ public class PlayerController : MonoBehaviour {
 
     private Animator anim;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        IsDead = false;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(IsDead)
+        {
+            return;
+        }
+
         float h = Input.GetAxis("Horizontal");
         transform.Translate(Vector2.right * h * speed * Time.deltaTime);
 
-        anim.SetBool("IsWalking", h != 0 ? true : false);
-        GetComponent<SpriteRenderer>().flipX = h < 0 ? true : false;
+        if (h != 0)
+        {
+            anim.SetBool("IsWalking", true);
+            GetComponent<SpriteRenderer>().flipX = h < 0 ? true : false;
+        }
+        else
+        {
+            anim.SetBool("IsWalking", false);
+        }
 
-        if(Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             playerDead();
         }
-	}
+    }
 
     // Se déclenche à un temps donné
     void FixedUpdate()
     {
-        if(Input.GetButtonDown("Jump") && isGrounded)
+        if (IsDead)
+        {
+            return;
+        }
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             audio.PlayOneShot(soundJump);
             GetComponent<Rigidbody2D>().velocity = Vector2.up * jump * Time.deltaTime;
@@ -54,5 +76,6 @@ public class PlayerController : MonoBehaviour {
     {
         anim.SetTrigger("Dies");
         audio.PlayOneShot(soundDead);
+        IsDead = true;
     }
 }
